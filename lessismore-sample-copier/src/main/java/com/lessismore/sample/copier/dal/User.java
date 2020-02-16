@@ -7,5 +7,4 @@ public class User extends BaseUser {
     public String name;
     public Integer age;
     public Integer sex; // gender对应
-
 }
