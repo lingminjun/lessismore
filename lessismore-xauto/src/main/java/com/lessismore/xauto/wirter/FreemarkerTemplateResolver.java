@@ -1,17 +1,17 @@
 package com.lessismore.xauto.wirter;
 
 
-import freemarker.cache.StrongCacheStorage;
-import freemarker.cache.TemplateLoader;
+import freemarker.cache.*;
 import freemarker.log.Logger;
 import freemarker.template.Configuration;
-import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.Template;
 
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 public class FreemarkerTemplateResolver implements TemplateResolver {
@@ -41,12 +41,14 @@ public class FreemarkerTemplateResolver implements TemplateResolver {
 		CONFIGURATION.setTemplateUpdateDelay( Integer.MAX_VALUE );
 		CONFIGURATION.setLocalizedLookup( false );
 	}
+	private static final Configuration STRING_CONFIGURATION;
+	static {
+		STRING_CONFIGURATION = new Configuration( Configuration.DEFAULT_INCOMPATIBLE_IMPROVEMENTS );
+		STRING_CONFIGURATION.setTemplateLoader( new StringTemplateLoader() );
+		STRING_CONFIGURATION.setDefaultEncoding("UTF-8");
+		STRING_CONFIGURATION.setCacheStorage(new NoCacheStorage());
+	}
 
-	/**
-	 * Simplified template loader that avoids reading modification timestamps and disables the jar-file caching.
-	 *
-	 * @author Andreas Gudian
-	 */
 	private static final class SimpleClasspathLoader implements TemplateLoader {
 		@Override
 		public Reader getReader(Object name, String encoding) throws IOException {
@@ -79,6 +81,34 @@ public class FreemarkerTemplateResolver implements TemplateResolver {
 		}
 	}
 
+	private static final class NoCacheStorage implements ConcurrentCacheStorage, CacheStorageWithGetSize {
+
+		public NoCacheStorage() {
+		}
+
+		public boolean isConcurrent() {
+			return true;
+		}
+
+		public Object get(Object key) {
+			return null;
+		}
+
+		public void put(Object key, Object value) {
+		}
+
+		public void remove(Object key) {
+		}
+
+		public int getSize() {
+			return 0;
+		}
+
+		public void clear() {
+
+		}
+	}
+
 	@Override
 	public String resolver(String relativePath, String suffix, Object model) {
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -87,6 +117,29 @@ public class FreemarkerTemplateResolver implements TemplateResolver {
 			temp.process(model, new OutputStreamWriter(bos));
 			String result = bos.toString("UTF-8");
 //			System.out.println(result);
+			return result;
+		} catch (Throwable e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				bos.close();
+			} catch (IOException e) {}
+		}
+		return null;
+	}
+
+	/**
+	 * 字符模板渲染
+	 * @param template
+	 * @param model
+	 * @return
+	 */
+	public String resolverStringTemplate(String template, Object model) {
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		try {
+			Template temp = new Template("" + System.currentTimeMillis(), template, STRING_CONFIGURATION);
+			temp.process(model, new OutputStreamWriter(bos));
+			String result = bos.toString("UTF-8");
 			return result;
 		} catch (Throwable e) {
 			e.printStackTrace();

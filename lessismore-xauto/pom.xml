@@ -103,6 +103,7 @@
                         <!--<annotationProcessor>lombok.core.AnnotationProcessor</annotationProcessor>-->
                         <annotationProcessor>com.lessismore.xauto.processor.XAutoDataProcessor</annotationProcessor>
                         <annotationProcessor>com.lessismore.xauto.processor.XAutoConvertProcessor</annotationProcessor>
+                        <annotationProcessor>com.lessismore.xauto.processor.XAutoGeneratorProcessor</annotationProcessor>
                     </annotationProcessors>
                 </configuration>
                 <!--<executions>-->

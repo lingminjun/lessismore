@@ -1,2 +1,3 @@
 com.lessismore.xauto.processor.XAutoDataProcessor
 com.lessismore.xauto.processor.XAutoConvertProcessor
+com.lessismore.xauto.processor.XAutoGeneratorProcessor
