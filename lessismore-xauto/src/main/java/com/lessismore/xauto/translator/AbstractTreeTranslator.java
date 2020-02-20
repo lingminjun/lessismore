@@ -457,7 +457,14 @@ public abstract class AbstractTreeTranslator extends TreeTranslator {
             }
         }
 
-//        System.out.println("parse class:\n" + classInfo.toString());
+        // 查看他的supper
+        // 查看父类
+        if (classSymbol.getSuperclass() != null) {
+            // 直接带有包名，取名字即可
+            String superClassName = classSymbol.getSuperclass().toString();
+            classInfo.superClass = getClassInfo(superClassName);
+        }
+
         return classInfo;
     }
 

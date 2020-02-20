@@ -55,6 +55,12 @@ public class ClassInfo {
         return fields;
     }
 
+    public List<FieldInfo> getReverseAllFields() {
+        List<FieldInfo> list = new ArrayList<>(getAllFields());
+        Collections.reverse(list);
+        return list;
+    }
+
     public FieldInfo findField(String name) {
         for (FieldInfo field : fields) {
             if (field.name.equals(name)) {
@@ -229,7 +235,9 @@ public class ClassInfo {
             for (FieldInfo fieldInfo : staticFields) {
                 builder.append("\t");
                 builder.append(fieldInfo.toString());
-                builder.append(";\n");
+                builder.append("; // matchName=");
+                builder.append(fieldInfo.getMatchFieldName());
+                builder.append("\n");
             }
         }
         if (!fields.isEmpty()) {
@@ -237,7 +245,9 @@ public class ClassInfo {
             for (FieldInfo fieldInfo : fields) {
                 builder.append("\t");
                 builder.append(fieldInfo.toString());
-                builder.append(";\n");
+                builder.append("; // matchName=");
+                builder.append(fieldInfo.getMatchFieldName());
+                builder.append("\n");
             }
         }
         if (!staticMethods.isEmpty()) {
@@ -245,7 +255,9 @@ public class ClassInfo {
             for (MethodInfo methodInfo : staticMethods) {
                 builder.append("\t");
                 builder.append(methodInfo.toString());
-                builder.append(";\n");
+                builder.append("; // matchName=");
+                builder.append(methodInfo.getMatchFieldName());
+                builder.append("\n");
             }
         }
         if (!constructMethods.isEmpty()) {
@@ -261,7 +273,9 @@ public class ClassInfo {
             for (MethodInfo methodInfo : methods) {
                 builder.append("\t");
                 builder.append(methodInfo.toString());
-                builder.append(";\n");
+                builder.append("; // matchName=");
+                builder.append(methodInfo.getMatchFieldName());
+                builder.append("\n");
             }
         }
 

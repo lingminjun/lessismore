@@ -43,23 +43,22 @@ public class CopierInfo {
         this.imps.add(target.getClassName());
         this.imps.add(Copier.class.getName());
 
+        //System.out.println(this.name + "构建开始\n" + source.toString());
+
         // 初始化assignInfos
-        List<FieldInfo> allFields = target.getAllFields();
+        List<FieldInfo> allFields = target.getReverseAllFields();
         for (FieldInfo left : allFields) {
             // 只有可访问的属性才会构建
             if (left.isPublic || (left.setter != null && left.setter.isPublic)) {
                 String matchName = left.getMatchFieldName();
                 FieldInfo rightField = source.findMatchField(matchName);
                 MethodInfo rightMethod = source.findGetterMatchMethod(matchName, true);
-                // 没有匹配属性
-                if (rightField == null && rightMethod == null) {
-                    continue;
-                }
-
+                //System.out.println(this.name + "::target." + left.name + " sourceField = " + (rightField != null) + " ; sourceMethid = " + (rightMethod != null));
                 // 构建赋值对象
                 this.assignInfos.add(new AssignInfo(left.setter, rightMethod, left, rightField, left.getter));
             }
         }
+        //System.out.println(this.name + "构建结束");
     }
 
     public ClassInfo getTarget() {

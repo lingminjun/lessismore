@@ -66,8 +66,6 @@ public class XAutoConverterConfigurationTreeTranslator extends AbstractTreeTrans
                         }
                     }
                     if (target != null && source != null) {//等式，直接取右侧
-//                        System.out.println("target==>"+target.toString());
-//                        System.out.println("source==>"+target.toString());
                         CopierInfo copierInfo = new CopierInfo(target,source);
                         targetAndSources.add(copierInfo);
                     }

@@ -65,17 +65,17 @@ public class MethodInfo {
     public boolean isGetter() {
         if (params.size() == 0 && returnType != null && !returnType.equals("void")) {
             if (name.startsWith("is")) {
-                if (name.length() > 3 && name.charAt(2) >= 'a' && name.charAt(2) >= 'z' && name.charAt(3) >= 'A' && name.charAt(2) >= 'Z') {
+                if (StringUtils.isLowerCase(name, 2) && StringUtils.isUpperCase(name, 3)) {
                     return true;
-                } else if (name.length() > 2 && name.charAt(2) >= 'A' && name.charAt(2) >= 'Z') {
+                } else if (StringUtils.isUpperCase(name, 2)) {
                     return true;
                 } else {// 无法截取is
                     return false;
                 }
             } else if (name.startsWith("get")) {
-                if (name.length() > 4 && name.charAt(3) >= 'a' && name.charAt(3) >= 'z' && name.charAt(4) >= 'A' && name.charAt(4) >= 'Z') {
+                if (StringUtils.isLowerCase(name, 3) && StringUtils.isUpperCase(name, 4)) {
                     return true;
-                } else if (name.length() > 3 && name.charAt(3) >= 'A' && name.charAt(3) >= 'Z') {
+                } else if (StringUtils.isUpperCase(name, 3)) {
                     return true;
                 } else {// 无法截取get
                     return false;
@@ -89,9 +89,9 @@ public class MethodInfo {
         // 仅仅当时getter
         if (params.size() == 1 && (returnType == null || returnType.equals("void"))) {
             if (name.startsWith("set")) {
-                if (name.length() > 4 && name.charAt(3) >= 'a' && name.charAt(3) >= 'z' && name.charAt(4) >= 'A' && name.charAt(4) >= 'Z') {
+                if (StringUtils.isLowerCase(name, 3) && StringUtils.isUpperCase(name, 4)) {
                     return true;
-                } else if (name.length() > 3 && name.charAt(3) >= 'A' && name.charAt(3) >= 'Z') {
+                } else if (StringUtils.isUpperCase(name, 3)) {
                     return true;
                 } else {// 无法截取set
                     return false;

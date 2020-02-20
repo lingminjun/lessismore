@@ -42,7 +42,7 @@ public class FieldInfo {
     }
 
     private String getAccessMethodName(String name, String prefix) {
-        if (name.length() > 1 && name.charAt(0) >= 'a' && name.charAt(0) <= 'z' && name.charAt(1) >= 'A' && name.charAt(1) <= 'Z') {
+        if (StringUtils.isLowerCase(name, 0) && StringUtils.isUpperCase(name, 1)) {
             return prefix + name;
         } else {
             return prefix + name.substring(0, 1).toUpperCase() + name.substring(1, name.length());
@@ -57,13 +57,13 @@ public class FieldInfo {
 
         // 特殊的isXxx
         if ("boolean".equals(type) && name.startsWith("is")) {
-            if (name.length() > 3 && name.charAt(2) >= 'A' && name.charAt(2) <= 'Z') {
+            if (StringUtils.isUpperCase(name, 2)) {
                 return name;
             }
         }
 
         if ("java.lang.Boolean".equals(type) && name.startsWith("is")) {
-            if (name.length() > 3 && name.charAt(2) >= 'A' && name.charAt(2) <= 'Z') {
+            if (StringUtils.isUpperCase(name, 2)) {
                 return "get" + name.substring(2);
             }
         }
@@ -83,7 +83,7 @@ public class FieldInfo {
 
         // 特殊的isXxx
         if (("boolean".equals(type) || "java.lang.Boolean".equals(type)) && name.startsWith("is")) {
-            if (name.length() > 3 && name.charAt(2) >= 'A' && name.charAt(2) <= 'Z') {
+            if (StringUtils.isUpperCase(name, 2)) {
                 return "set" + name.substring(2);
             }
         }
@@ -145,15 +145,14 @@ public class FieldInfo {
         }
         // is XXX 的情况
         if (("boolean".equals(type) || "java.lang.Boolean".equals(type)) && name.startsWith("is")) {
-            if (name.length() > 3 && name.charAt(2) >= 'A' && name.charAt(2) <= 'Z') {
+            if (StringUtils.isUpperCase(name, 2)) {
                 matchFieldName = name.substring(2);
                 return matchFieldName;
             }
         }
 
         // 小字母开头，如aXxx，保留
-        char first = name.charAt(0);
-        if (first >= 'a' && first <= 'z' && name.length() > 1 && name.charAt(2) >= 'A' && name.charAt(2) <= 'Z') {
+        if (StringUtils.isLowerCase(name, 0) && StringUtils.isUpperCase(name, 1)) {
             matchFieldName = name;
             return matchFieldName;
         }

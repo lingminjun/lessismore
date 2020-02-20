@@ -94,7 +94,7 @@ public class AssignInfo {
         if (assignmentStatement != null) {
             return assignmentStatement;
         }
-        assignmentStatement = "// " + leftField.name + " = ? ";
+        assignmentStatement = "// " + VAR_TARGET + "." + leftField.name + " = ? ";
 
         String leftType = getLeftType();
         String rightType = getRightType();
@@ -162,10 +162,10 @@ public class AssignInfo {
             valueStatement.append(",");
             if (type != null) {
                 valueStatement.append(type);
-                valueStatement.append(",");
+                valueStatement.append(".class,");
                 if (elementType != null) {
                     valueStatement.append(elementType);
-                    valueStatement.append(",");
+                    valueStatement.append(".class,");
                 }
             }
             valueStatement.append(getTargetDefaultStatement()); // defaultValue
@@ -203,55 +203,55 @@ public class AssignInfo {
 
 
     private String getINTTypeAssignmentStatement() {
-        return assemblyAssignmentStatement(Converters.INT.class.getName() + ".to", null, null);
+        return assemblyAssignmentStatement(Converters.INT.class.getName().replaceAll("\\$", ".") + ".to", null, null);
     }
 
     private String getSHORTTypeAssignmentStatement() {
-        return assemblyAssignmentStatement(Converters.SHORT.class.getName() + ".to", null, null);
+        return assemblyAssignmentStatement(Converters.SHORT.class.getName().replaceAll("\\$", ".") + ".to", null, null);
     }
 
     private String getLONGTypeAssignmentStatement() {
-        return assemblyAssignmentStatement(Converters.LONG.class.getName() + ".to", null, null);
+        return assemblyAssignmentStatement(Converters.LONG.class.getName().replaceAll("\\$", ".") + ".to", null, null);
     }
 
     private String getFLOATTypeAssignmentStatement() {
-        return assemblyAssignmentStatement(Converters.FLOAT.class.getName() + ".to", null, null);
+        return assemblyAssignmentStatement(Converters.FLOAT.class.getName().replaceAll("\\$", ".") + ".to", null, null);
     }
 
     private String getDOUBLETypeAssignmentStatement() {
-        return assemblyAssignmentStatement(Converters.DOUBLE.class.getName() + ".to", null, null);
+        return assemblyAssignmentStatement(Converters.DOUBLE.class.getName().replaceAll("\\$", ".") + ".to", null, null);
     }
 
     private String getBOOLTypeAssignmentStatement() {
-        return assemblyAssignmentStatement(Converters.BOOL.class.getName() + ".to", null, null);
+        return assemblyAssignmentStatement(Converters.BOOL.class.getName().replaceAll("\\$", ".") + ".to", null, null);
     }
 
     private String getCHARTypeAssignmentStatement() {
-        return assemblyAssignmentStatement(Converters.CHAR.class.getName() + ".to", null, null);
+        return assemblyAssignmentStatement(Converters.CHAR.class.getName().replaceAll("\\$", ".") + ".to", null, null);
     }
 
     private String getBYTETypeAssignmentStatement() {
-        return assemblyAssignmentStatement(Converters.BYTE.class.getName() + ".to", null, null);
+        return assemblyAssignmentStatement(Converters.BYTE.class.getName().replaceAll("\\$", ".") + ".to", null, null);
     }
 
     private String getStringTypeAssignmentStatement() {
-        return assemblyAssignmentStatement(Converters.Str.class.getName() + ".to", null, null);
+        return assemblyAssignmentStatement(Converters.Str.class.getName().replaceAll("\\$", ".") + ".to", null, null);
     }
 
     private String getARRAYTypeAssignmentStatement(String type, String elementType) {
-        return assemblyAssignmentStatement(Converters.Array.class.getName() + ".to", type, elementType);
+        return assemblyAssignmentStatement(Converters.Array.class.getName().replaceAll("\\$", ".") + ".to", type, elementType);
     }
 
     private String getCollectionTypeAssignmentStatement(String type, String elementType) {
-        return assemblyAssignmentStatement(Converters.Collection.class.getName() + ".to", type, elementType);
+        return assemblyAssignmentStatement(Converters.Collection.class.getName().replaceAll("\\$", ".") + ".to", type, elementType);
     }
 
     private String getObjTypeAssignmentStatement(String type, String elementType) {
-        return assemblyAssignmentStatement(Converters.Obj.class.getName() + ".to", type, elementType);
+        return assemblyAssignmentStatement(Converters.Obj.class.getName().replaceAll("\\$", ".") + ".to", type, elementType);
     }
 
     private String getMapTypeAssignmentStatement(String elementType) {
-        return assemblyAssignmentStatement(Converters.Obj.class.getName() + ".to", elementType, null);
+        return assemblyAssignmentStatement(Converters.Obj.class.getName().replaceAll("\\$", ".") + ".to", elementType, null);
     }
 
 
