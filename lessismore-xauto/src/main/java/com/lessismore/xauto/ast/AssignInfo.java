@@ -82,7 +82,7 @@ public class AssignInfo {
             sourceStatement.append(rightGetter.name);
             sourceStatement.append("()");
         } else {// 属性
-            sourceStatement.append(VAR_TARGET);
+            sourceStatement.append(VAR_SOURCE);
             sourceStatement.append(".");
             sourceStatement.append(rightField.name);
         }
@@ -99,7 +99,7 @@ public class AssignInfo {
         String leftType = getLeftType();
         String rightType = getRightType();
         // 是否有赋值语句
-        if (leftType == null || rightType == null || (leftField != null && leftField.isIgnore())) {
+        if (leftType == null || rightType == null || leftField.isIgnore()) {
             return assignmentStatement;
         }
 
@@ -182,7 +182,7 @@ public class AssignInfo {
         if (leftSetter != null && leftSetter.isPublic) {
             statement.append(VAR_TARGET);
             statement.append(".");
-            statement.append(leftGetter.name);
+            statement.append(leftSetter.name);
             statement.append("(");
             statement.append(valueStatement);
             statement.append(")");

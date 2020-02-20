@@ -6,15 +6,16 @@ import lombok.Data;
 
 import java.util.List;
 
-@XAutoAccessor
+//@XAutoAccessor
+@Data
 @XAutoConvert("com.lessismore.sample.copier.dal.User")
 public class UserDTO {
-    private long uid;
-    private String nick;
-    private String mobile;
-    private String name;
-    private int age;
-    private Gender gender; // gender对应
+    public Long uid;
+    public String nick;
+    public String mobile;
+    public String name;
+    public Integer age;
+    public Gender gender; // gender对应
 
     private List<UserDTO> friends;
 }

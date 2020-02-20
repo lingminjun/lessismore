@@ -46,8 +46,7 @@ public class ClassInfo {
     public final List<MethodInfo> constructMethods = new ArrayList<>();
 
     public List<FieldInfo> getAllFields() {
-        List<FieldInfo> fields = new ArrayList<FieldInfo>();
-        fields.addAll(fields);
+        List<FieldInfo> fields = new ArrayList<>(this.fields);
         ClassInfo sp = superClass;
         while (sp != null) {
             fields.addAll(sp.fields);
