@@ -256,8 +256,8 @@ public abstract class AbstractTreeTranslator extends TreeTranslator {
                     for (JCTree.JCVariableDecl var : params) {
                         ParamInfo paramInfo = new ParamInfo(var.name.toString());
                         if (var.vartype.type != null) {
-                            //paramInfo.type = var.vartype.type.toString();
-                            paramInfo.type = var.vartype.toString();
+                            paramInfo.type = var.vartype.type.toString();
+                            //paramInfo.type = var.vartype.toString();
                         } else {
                             paramInfo.type = var.vartype.toString();
                         }
