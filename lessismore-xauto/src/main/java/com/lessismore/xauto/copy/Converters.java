@@ -457,7 +457,11 @@ public final class Converters {
             } else if (value instanceof Character) {
                 return to((Character)value, defaultValue);
             } else if (value.getClass().isEnum()) {// 枚举支持
-                return (long)((java.lang.Enum)value).ordinal();
+                if (value instanceof EnumMapping) {
+                    return (long) ((EnumMapping) value).intValue();
+                } else {
+                    return (long) ((java.lang.Enum) value).ordinal();
+                }
             } else {
                 return defaultValue;
             }
@@ -777,10 +781,20 @@ public final class Converters {
                 return defaultValue;
             }
 
-            T[] values = enumType.getEnumConstants();
-            for (int i = 0; i < values.length; i++) {
-                if (ordinal == values[i].ordinal()) {
-                    return values[i];
+            // 采用EnumMapping进行转换
+            if (EnumMapping.class.isAssignableFrom(enumType)) {
+                T[] values = enumType.getEnumConstants();
+                for (int i = 0; i < values.length; i++) {
+                    if (ordinal == ((EnumMapping)values[i]).intValue()) {
+                        return values[i];
+                    }
+                }
+            } else {// 默认ordinal
+                T[] values = enumType.getEnumConstants();
+                for (int i = 0; i < values.length; i++) {
+                    if (ordinal == values[i].ordinal()) {
+                        return values[i];
+                    }
                 }
             }
             return defaultValue;
