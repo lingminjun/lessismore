@@ -2,10 +2,7 @@ package com.lessismore.xauto.ast;
 
 import com.lessismore.xauto.copy.Copier;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class CopierInfo {
     public final ClassInfo target;
@@ -16,6 +13,7 @@ public class CopierInfo {
     // 存放所有的赋值对象
     public final List<AssignInfo> assignInfos = new ArrayList<>();
     public final Set<String> imps = new HashSet<>();
+    private final Map<String,MappingInfo> mappings = new HashMap<>();
 
     public final String superClassName = Copier.class.getName();
     public final String superClassSimpleName = Copier.class.getSimpleName();
@@ -28,15 +26,18 @@ public class CopierInfo {
         return name;
     }
 
-    public CopierInfo(ClassInfo target, ClassInfo source) {
-        this(null, target, source);
+    public CopierInfo(ClassInfo target, ClassInfo source, Map<String,MappingInfo> mappings) {
+        this(null, target, source, mappings);
     }
 
-    public CopierInfo(String packageName, ClassInfo target, ClassInfo source) {
+    public CopierInfo(String packageName, ClassInfo target, ClassInfo source, Map<String,MappingInfo> mappings) {
         this.packageName = (packageName != null && packageName.length() > 0) ? packageName : source.packageName + ".copier";
         this.target = target;
         this.source = source;
         this.name = source.name + "To" + target.name + "Copier";
+        if (mappings != null && mappings.size() > 0) {
+            this.mappings.putAll(mappings);
+        }
 
         // 添加imports
         this.imps.add(source.getClassName());
@@ -50,12 +51,26 @@ public class CopierInfo {
         for (FieldInfo left : allFields) {
             // 只有可访问的属性才会构建
             if (left.isPublic || (left.setter != null && left.setter.isPublic)) {
-                String matchName = left.getMatchFieldName();
-                FieldInfo rightField = source.findMatchField(matchName);
-                MethodInfo rightMethod = source.findGetterMatchMethod(matchName, true);
+                String matchName = left.getFieldMatchName();
+                FieldInfo rightField = null;
+                MethodInfo rightMethod = null;
+                // 针对配置mapping来取
+                MappingInfo mappingInfo = this.mappings.get(left.name);
+                if (mappingInfo != null && StringUtils.notEmpty(mappingInfo.from)) {
+                    rightField = source.findMatchField(mappingInfo.from);
+                    matchName = StringUtils.convertFieldMatchName(mappingInfo.from, left.type); // type参数有一些问题
+                    rightMethod = source.findGetterMatchMethod(matchName, true);
+                } else {
+                    rightField = source.findMatchField(matchName);
+                    rightMethod = source.findGetterMatchMethod(matchName, true);
+                }
                 //System.out.println(this.name + "::target." + left.name + " sourceField = " + (rightField != null) + " ; sourceMethid = " + (rightMethod != null));
                 // 构建赋值对象
-                this.assignInfos.add(new AssignInfo(left.setter, rightMethod, left, rightField, left.getter));
+                AssignInfo assignInfo = new AssignInfo(left.setter, rightMethod, left, rightField, left.getter);
+                if (mappingInfo != null && StringUtils.notEmpty(mappingInfo.expression)) {
+                    assignInfo.expression = mappingInfo.expression;
+                }
+                this.assignInfos.add(assignInfo);
             }
         }
         //System.out.println(this.name + "构建结束");

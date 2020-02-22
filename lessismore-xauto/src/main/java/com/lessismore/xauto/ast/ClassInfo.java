@@ -103,7 +103,7 @@ public class ClassInfo {
 
     public FieldInfo findMatchField(String matchName) {
         for (FieldInfo field : fields) {
-            if (field.getMatchFieldName().equals(matchName)) {
+            if (field.getFieldMatchName().equals(matchName)) {
                 return field;
             }
         }
@@ -117,7 +117,7 @@ public class ClassInfo {
 
     public MethodInfo findGetterMatchMethod(String matchName, boolean isPublic) {
         for (MethodInfo method : methods) {
-            if (method.isGetter() && method.getMatchFieldName().equals(matchName)) {
+            if (method.isGetter() && method.getFieldMatchName().equals(matchName)) {
                 if (isPublic) {
                     if (method.isPublic) {
                         return method;
@@ -137,7 +137,7 @@ public class ClassInfo {
 
     public MethodInfo findSetterMatchMethod(String matchName, boolean isPublic) {
         for (MethodInfo method : methods) {
-            if (method.isSetter() && method.getMatchFieldName().equals(matchName)) {
+            if (method.isSetter() && method.getFieldMatchName().equals(matchName)) {
                 if (isPublic) {
                     if (method.isPublic) {
                         return method;
@@ -236,7 +236,7 @@ public class ClassInfo {
                 builder.append("\t");
                 builder.append(fieldInfo.toString());
                 builder.append("; // matchName=");
-                builder.append(fieldInfo.getMatchFieldName());
+                builder.append(fieldInfo.getFieldMatchName());
                 builder.append("\n");
             }
         }
@@ -246,7 +246,7 @@ public class ClassInfo {
                 builder.append("\t");
                 builder.append(fieldInfo.toString());
                 builder.append("; // matchName=");
-                builder.append(fieldInfo.getMatchFieldName());
+                builder.append(fieldInfo.getFieldMatchName());
                 builder.append("\n");
             }
         }
@@ -256,7 +256,7 @@ public class ClassInfo {
                 builder.append("\t");
                 builder.append(methodInfo.toString());
                 builder.append("; // matchName=");
-                builder.append(methodInfo.getMatchFieldName());
+                builder.append(methodInfo.getFieldMatchName());
                 builder.append("\n");
             }
         }
@@ -274,7 +274,7 @@ public class ClassInfo {
                 builder.append("\t");
                 builder.append(methodInfo.toString());
                 builder.append("; // matchName=");
-                builder.append(methodInfo.getMatchFieldName());
+                builder.append(methodInfo.getFieldMatchName());
                 builder.append("\n");
             }
         }

@@ -138,31 +138,13 @@ public class FieldInfo {
     }
 
     // 专门用于匹配赋值用的属性名
-    private String matchFieldName;
-    public String getMatchFieldName() {
-        if (matchFieldName != null) {
-            return matchFieldName;
+    private String fieldMatchName;
+    public String getFieldMatchName() {
+        if (fieldMatchName != null) {
+            return fieldMatchName;
         }
-        // is XXX 的情况
-        if (("boolean".equals(type) || "java.lang.Boolean".equals(type)) && name.startsWith("is")) {
-            if (StringUtils.isUpperCase(name, 2)) {
-                matchFieldName = name.substring(2);
-                return matchFieldName;
-            }
-        }
-
-        // 小字母开头，如aXxx，保留
-        if (StringUtils.isLowerCase(name, 0) && StringUtils.isUpperCase(name, 1)) {
-            matchFieldName = name;
-            return matchFieldName;
-        }
-
-        // 首字母大写
-        matchFieldName = name.substring(0,1).toUpperCase();
-        if (name.length() > 1) {
-            matchFieldName +=  name.substring(1);
-        }
-        return matchFieldName;
+        fieldMatchName = StringUtils.convertFieldMatchName(name, type);
+        return fieldMatchName;
     }
 
     public static MethodInfo createGetter(FieldInfo field) {

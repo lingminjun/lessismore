@@ -16,5 +16,5 @@ public @interface XAutoConvert {
      * 所有支持的类
      * @return
      */
-    String[] value();
+    XAutoTarget[] value();
 }

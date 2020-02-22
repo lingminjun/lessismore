@@ -17,7 +17,7 @@ public class Main {
         user.name = "张帆";
         user.nick = "不重要";
         user.head = "https://www.ddd.com/dasd/xsa.png";
-        user.sex = 0;
+        user.sex = 1;
         user.age = 30;
 
         CopierInterface<User, UserDTO> copier1 = CopierFactory.getCopier(User.class, UserDTO.class);

@@ -34,10 +34,10 @@ public class MethodInfo {
     public final List<ParamInfo> params = new ArrayList<>();
 
     // 专门用于匹配赋值用的属性名
-    private String matchFieldName;
-    public String getMatchFieldName() {
-        if (matchFieldName != null) {
-            return matchFieldName;
+    private String fieldMatchName;
+    public String getFieldMatchName() {
+        if (fieldMatchName != null) {
+            return fieldMatchName;
         }
 
         String subName = name;
@@ -58,8 +58,8 @@ public class MethodInfo {
             }
         }
 
-        matchFieldName = subName;
-        return matchFieldName;
+        fieldMatchName = subName;
+        return fieldMatchName;
     }
 
     public boolean isGetter() {

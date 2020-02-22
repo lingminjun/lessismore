@@ -1,9 +1,8 @@
 package com.lessismore.xauto.translator;
 
+import com.lessismore.xauto.annotation.XAutoConverter;
 import com.lessismore.xauto.annotation.XAutoConverterConfiguration;
-import com.lessismore.xauto.ast.ClassInfo;
-import com.lessismore.xauto.ast.ConvertersInfo;
-import com.lessismore.xauto.ast.CopierInfo;
+import com.lessismore.xauto.ast.*;
 import com.lessismore.xauto.copy.ConverterConfiguration;
 import com.lessismore.xauto.processor.FileObjectManager;
 import com.sun.tools.javac.tree.JCTree;
@@ -15,7 +14,9 @@ import javax.annotation.processing.Messager;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class XAutoConverterConfigurationTreeTranslator extends AbstractTreeTranslator {
@@ -49,26 +50,29 @@ public class XAutoConverterConfigurationTreeTranslator extends AbstractTreeTrans
         if (converters != null) {
             for (JCTree.JCAnnotation annotation : converters) {
                 // target = User.class, source = Person.class
-                if (annotation.args.size() == 2) {
-                    ClassInfo target = null;
-                    ClassInfo source = null;
-                    if (annotation.args.get(0) instanceof JCTree.JCAssign) {//等式，直接取右侧
-                        if (((JCTree.JCAssign) annotation.args.get(0)).lhs.toString().equals("target")) {
-                            JCTree.JCFieldAccess targetField = (JCTree.JCFieldAccess)((JCTree.JCAssign) annotation.args.get(0)).rhs;
-                            JCTree.JCFieldAccess sourceField = (JCTree.JCFieldAccess)((JCTree.JCAssign) annotation.args.get(1)).rhs;
+                ClassInfo target = null;
+                ClassInfo source = null;
+                Map<String,MappingInfo> mapping = new HashMap<>();
+                for (JCTree.JCExpression expression : annotation.args) {
+                    if (expression instanceof JCTree.JCAssign) {//等式，直接取右侧
+                        if (((JCTree.JCAssign) expression).lhs.toString().equals("target")) {
+                            JCTree.JCFieldAccess targetField = (JCTree.JCFieldAccess)((JCTree.JCAssign) expression).rhs;
                             target = getClassInfo(targetField.selected.type.toString());
+                        } else if (((JCTree.JCAssign) expression).lhs.toString().equals("source")) {
+                            JCTree.JCFieldAccess sourceField = (JCTree.JCFieldAccess)((JCTree.JCAssign) expression).rhs;
                             source = getClassInfo(sourceField.selected.type.toString());
-                        } else {
-                            JCTree.JCFieldAccess targetField = (JCTree.JCFieldAccess)((JCTree.JCAssign) annotation.args.get(1)).rhs;
-                            JCTree.JCFieldAccess sourceField = (JCTree.JCFieldAccess)((JCTree.JCAssign) annotation.args.get(0)).rhs;
-                            target = getClassInfo(targetField.selected.type.toString());
-                            source = getClassInfo(sourceField.selected.type.toString());
+                        } else if (((JCTree.JCAssign) expression).lhs.toString().equals("mapping")) {
+                            Map<String,MappingInfo> mp = Utils.parseMapping(((JCTree.JCAssign) expression).rhs);
+                            if (mp != null && mp.size() > 0) {
+                                mapping.putAll(mp);
+                            }
                         }
                     }
-                    if (target != null && source != null) {//等式，直接取右侧
-                        CopierInfo copierInfo = new CopierInfo(target,source);
-                        targetAndSources.add(copierInfo);
-                    }
+                }
+
+                if (target != null && source != null) {//等式，直接取右侧
+                    CopierInfo copierInfo = new CopierInfo(target,source,mapping);
+                    targetAndSources.add(copierInfo);
                 }
             }
         }
@@ -78,23 +82,7 @@ public class XAutoConverterConfigurationTreeTranslator extends AbstractTreeTrans
 
     private java.util.List<JCTree.JCAnnotation> getConverterAnnotations(JCTree.JCClassDecl jcClassDecl) {
         JCTree.JCAnnotation autoConfiguration = getAnnotation(jcClassDecl.mods.annotations, XAutoConverterConfiguration.class.getName());
-        java.util.List<JCTree.JCAnnotation> converters = new ArrayList<JCTree.JCAnnotation>();
-        for (JCTree.JCExpression expression : autoConfiguration.args) {
-            if (expression instanceof JCTree.JCAssign) {//等式，直接取右侧
-                JCTree.JCExpression rhs = ((JCTree.JCAssign) expression).rhs;
-                if (rhs instanceof JCTree.JCAnnotation) {
-                    converters.add((JCTree.JCAnnotation)rhs);
-                } else if (rhs instanceof JCTree.JCNewArray) {// 数组，多个
-                    com.sun.tools.javac.util.List<JCTree.JCExpression> elems = ((JCTree.JCNewArray) rhs).elems;
-                    for (JCTree.JCExpression elem : elems) {
-                        if (elem instanceof JCTree.JCAnnotation) {
-                            converters.add((JCTree.JCAnnotation)elem);
-                        }
-                    }
-                }
-            }
-        }
-        return converters;
+        return getArgsAnnotations(autoConfiguration, XAutoConverter.class.getName());
     }
 
     private String makeWriteConvertersConfiguration(ConvertersInfo convertersInfo) {

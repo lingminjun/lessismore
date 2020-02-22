@@ -17,4 +17,10 @@ public @interface XAutoConverter {
      * 待转换目标类型
      */
     Class<?> target();
+
+    /**
+     * mapping细节变化
+     * @return
+     */
+    XAutoMapping[] mapping() default {};
 }

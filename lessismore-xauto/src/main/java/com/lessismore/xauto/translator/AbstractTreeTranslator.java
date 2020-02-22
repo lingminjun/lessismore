@@ -1327,14 +1327,28 @@ public abstract class AbstractTreeTranslator extends TreeTranslator {
         return null;
     }
 
-    protected final String valueString(String value) {
-        if (value.startsWith("\"") && value.endsWith("\"")) {
-            return value.substring(1,value.length() - 1);
-        } else if (value.startsWith("\'") && value.endsWith("\'")) {
-            return value.substring(1,value.length() - 1);
-        } else {
-            return value;
+    protected java.util.List<JCTree.JCAnnotation> getArgsAnnotations(JCTree.JCAnnotation annotation, String type) {
+        java.util.List<JCTree.JCAnnotation> annotations = new ArrayList<JCTree.JCAnnotation>();
+        for (JCTree.JCExpression expression : annotation.args) {
+            if (expression instanceof JCTree.JCAssign) {//等式，直接取右侧
+                JCTree.JCExpression rhs = ((JCTree.JCAssign) expression).rhs;
+                if (rhs instanceof JCTree.JCAnnotation && ((JCTree.JCAnnotation) rhs).type.toString().equals(type)) {
+                    annotations.add((JCTree.JCAnnotation)rhs);
+                } else if (rhs instanceof JCTree.JCNewArray) {// 数组，多个
+                    com.sun.tools.javac.util.List<JCTree.JCExpression> elems = ((JCTree.JCNewArray) rhs).elems;
+                    for (JCTree.JCExpression elem : elems) {
+                        if (elem instanceof JCTree.JCAnnotation && ((JCTree.JCAnnotation) elem).type.toString().equals(type)) {
+                            annotations.add((JCTree.JCAnnotation)elem);
+                        }
+                    }
+                }
+            }
         }
+        return annotations;
+    }
+
+    protected final String valueString(String value) {
+        return StringUtils.valueString(value);
     }
 
 

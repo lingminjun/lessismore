@@ -14,6 +14,7 @@ public class AssignInfo {
     // 右侧 source
     public final FieldInfo rightField;
     public final MethodInfo rightGetter;
+    public String expression;
 
     private String assignmentStatement;
 
@@ -46,7 +47,7 @@ public class AssignInfo {
     }
 
     public String getTargetDefaultStatement() {
-        if (leftGetter != null && !leftGetter.isStatic && leftSetter.isGetter() && leftSetter.isPublic) {
+        if (leftGetter != null && !leftGetter.isStatic && leftGetter.isGetter() && leftGetter.isPublic) {
             return VAR_TARGET + "." + leftGetter.name + "()";
         }
         if (leftField != null && !leftField.isStatic && leftField.isPublic) {
