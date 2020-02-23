@@ -8,6 +8,8 @@ import com.lessismore.sample.copier.pv.Person;
 import com.lessismore.xauto.copy.CopierFactory;
 import com.lessismore.xauto.copy.CopierInterface;
 
+import java.util.Date;
+
 public class Main {
     public static void main(String[] args) {
         System.out.println("测试Copier");
@@ -19,6 +21,7 @@ public class Main {
         user.head = "https://www.ddd.com/dasd/xsa.png";
         user.sex = 1;
         user.age = 30;
+        user.birthDay = new Date();
 
         CopierInterface<User, UserDTO> copier1 = CopierFactory.getCopier(User.class, UserDTO.class);
         UserDTO dto = copier1.copy(user);
@@ -27,6 +30,5 @@ public class Main {
         CopierInterface<User, Person> copier2 = CopierFactory.getCopier(User.class, Person.class);
         Person person = copier2.copy(user);
         System.out.println(JSON.toJSON(person));
-
     }
 }

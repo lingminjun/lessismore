@@ -17,6 +17,7 @@ public class UserDTO {
     public String name;
     public Integer age;
     public Gender gender; // gender对应
+    public String birthDay;
 
     private List<UserDTO> friends;
 }

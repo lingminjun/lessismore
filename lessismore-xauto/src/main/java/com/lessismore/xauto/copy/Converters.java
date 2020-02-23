@@ -1,7 +1,11 @@
 package com.lessismore.xauto.copy;
 
 import java.lang.reflect.Array;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -37,6 +41,9 @@ public final class Converters {
 
         // 字符串
         public static final java.lang.String TYPE_STRING = java.lang.String.class.getName();
+
+        // 日期
+        public static final java.lang.String TYPE_DATE = java.util.Date.class.getName();
 
         // 基础类
         public static final java.lang.String TYPE_OBJECT = Object.class.getName();
@@ -148,7 +155,7 @@ public final class Converters {
 
     public static class Obj {
         // 通用的转换函数
-        public static <T> T to(Object source, Class<T> type, Class<?> elementType, T defaultValue, Object elementDefaultVaule) {
+        public static <T> T to(Object source, Class<T> type, Class<?> elementType, T defaultValue, Object elementDefaultValue) {
             if (source == null || type == null) {
                 return defaultValue;
             }
@@ -160,7 +167,7 @@ public final class Converters {
 
             if (type.isArray()) {
                 if (defaultValue == null || defaultValue.getClass().isArray()) {
-                    return (T) Array.to(source, (Class<Object[]>)type, (Class<Object>)elementType, (Object[]) defaultValue, elementDefaultVaule);
+                    return (T) Array.to(source, (Class<Object[]>)type, (Class<Object>)elementType, (Object[]) defaultValue, elementDefaultValue);
                 } else {
                     return defaultValue;
                 }
@@ -171,7 +178,7 @@ public final class Converters {
                     return defaultValue;
                 }
             } else if (java.util.Collection.class.isAssignableFrom(type)) {
-                return (T)Collection.to(source, (Class<java.util.Collection>)type, (Class<Object>) elementType, (java.util.Collection)defaultValue, elementDefaultVaule);
+                return (T)Collection.to(source, (Class<java.util.Collection>)type, (Class<Object>) elementType, (java.util.Collection)defaultValue, elementDefaultValue);
             } else if (type == Integer.class || type == int.class) {
                 return (T)INT.to(source, (Integer)defaultValue);
             } else if (type == Short.class || type == short.class) {
@@ -199,6 +206,55 @@ public final class Converters {
         }
     }
 
+
+    public static class Date {
+        // 通用的转换函数
+        public static java.util.Date to(Object source, java.util.Date defaultValue) {
+            if (source == null) {
+                return defaultValue;
+            }
+
+            // 判断日期格式 yyyy-MM-dd HH:mm:ss.SSS  or  EEE MMM dd HH:mm:ss zzz yyyy (Date.toString)
+            if (source instanceof CharSequence) {
+                String str = source.toString();
+                try {
+                    if (isMatchRegex(str, DEFAULT_DATE_REGEX)) {
+                        return new SimpleDateFormat(DEFAULT_DATE_FORMAT).parse(str);
+                    } else if (isMatchRegex(str, NORMAL_DATE_REGEX)) {
+                        return new SimpleDateFormat(NORMAL_DATE_FORMAT).parse(str);
+                    } else if (isMatchRegex(str, COMMON_DATE_REGEX)) {
+                        return new SimpleDateFormat(COMMON_DATE_FORMAT).parse(str);
+                    }
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                // 无法确定是否为毫秒
+                Long value = LONG.to(source, null);
+                if (value != null) {
+                    return new java.util.Date(value.longValue());
+                }
+            }
+
+            return defaultValue;
+        }
+
+        // Sun Feb 23 11:09:27 CST 2020
+        private static final String DEFAULT_DATE_REGEX = "^[A-Z][a-z]{2} [A-Z][a-z]{2} \\d{2} \\d{2}:\\d{2}:\\d{2} [A-Z]{3} \\d{4}$";
+        private static final String NORMAL_DATE_REGEX = "^\\d{4}\\-\\d{2}\\-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{3}$";
+        private static final String COMMON_DATE_REGEX = "^\\d{4}\\-\\d{2}\\-\\d{2} \\d{2}:\\d{2}:\\d{2}$";
+
+        public static final String DEFAULT_DATE_FORMAT = "EEE MMM dd HH:mm:ss zzz yyyy";
+        public static final String NORMAL_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss.SSS";
+        public static final String COMMON_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
+
+        private static boolean isMatchRegex(String string, String regex){
+            Pattern pattern = Pattern.compile(regex);
+            return pattern.matcher(string).matches();
+        }
+
+
+    }
 
 
     // 负责容器转换
@@ -456,6 +512,8 @@ public final class Converters {
                 return to((java.lang.Boolean)value, defaultValue);
             } else if (value instanceof Character) {
                 return to((Character)value, defaultValue);
+            } else if (value instanceof java.util.Date) {
+                return ((java.util.Date) value).getTime();
             } else if (value.getClass().isEnum()) {// 枚举支持
                 if (value instanceof EnumMapping) {
                     return (long) ((EnumMapping) value).intValue();
@@ -580,6 +638,13 @@ public final class Converters {
             return value.toString();
         }
 
+        public static java.lang.String to(java.util.Date value, java.lang.String defaultValue) {
+            if (value == null) {
+                return defaultValue;
+            }
+            return new SimpleDateFormat(Date.NORMAL_DATE_FORMAT).format(value);
+        }
+
         public static java.lang.String to(Object value, java.lang.String defaultValue) {
             if (value == null) {
                 return defaultValue;
@@ -602,6 +667,8 @@ public final class Converters {
                 return to((java.lang.Boolean)value, defaultValue);
             } else if (value instanceof Character) {
                 return to((Character)value, defaultValue);
+            }  else if (value instanceof java.util.Date) {
+                return to((java.util.Date)value, defaultValue);
             } else if (value.getClass().isEnum()) {// 枚举支持
                 return ((java.lang.Enum)value).name();
             } else {
@@ -936,7 +1003,9 @@ public final class Converters {
                 return to((java.lang.Boolean)value, defaultValue);
             } else if (value instanceof Character) {
                 return to((Character)value, defaultValue);
-            } else {
+            } else if (value instanceof java.util.Date) {
+                return (double)((java.util.Date) value).getTime();
+            }  else {
                 return defaultValue;
             }
         }

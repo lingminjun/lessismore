@@ -119,6 +119,14 @@ public class AssignInfo {
             assignmentStatement = getDOUBLETypeAssignmentStatement();
         } else if (Converters.Type.TYPE_bool.equals(leftType) || Converters.Type.TYPE_BOOL.equals(leftType)) {
             assignmentStatement = getBOOLTypeAssignmentStatement();
+        } else if (Converters.Type.TYPE_char.equals(leftType) || Converters.Type.TYPE_CHAR.equals(leftType)) {
+            assignmentStatement = getCHARTypeAssignmentStatement();
+        } else if (Converters.Type.TYPE_byte.equals(leftType) || Converters.Type.TYPE_BYTE.equals(leftType)) {
+            assignmentStatement = getBYTETypeAssignmentStatement();
+        } else if (Converters.Type.TYPE_STRING.equals(leftType)) {
+            assignmentStatement = getStringTypeAssignmentStatement();
+        } else if (Converters.Type.TYPE_DATE.equals(leftType)) {
+            assignmentStatement = getDateTypeAssignmentStatement();
         } else if (Converters.Type.TYPE_ARRAY_int.equals(leftType) || Converters.Type.TYPE_ARRAY_INT.equals(leftType)) {
             assignmentStatement = getARRAYTypeAssignmentStatement(leftType, Converters.Type.getFirstElementType(leftType));
         } else if (Converters.Type.TYPE_ARRAY_short.equals(leftType) || Converters.Type.TYPE_ARRAY_SHORT.equals(leftType)) {
@@ -131,7 +139,11 @@ public class AssignInfo {
             assignmentStatement = getARRAYTypeAssignmentStatement(leftType, Converters.Type.getFirstElementType(leftType));
         } else if (Converters.Type.TYPE_ARRAY_bool.equals(leftType) || Converters.Type.TYPE_ARRAY_BOOL.equals(leftType)) {
             assignmentStatement = getARRAYTypeAssignmentStatement(leftType, Converters.Type.getFirstElementType(leftType));
-        } else if (Converters.Type.TYPE_STRING.equals(leftType) || Converters.Type.TYPE_ARRAY_STRING.equals(leftType)) {
+        } else if (Converters.Type.TYPE_ARRAY_char.equals(leftType) || Converters.Type.TYPE_ARRAY_CHAR.equals(leftType)) {
+            assignmentStatement = getARRAYTypeAssignmentStatement(leftType, Converters.Type.getFirstElementType(leftType));
+        } else if (Converters.Type.TYPE_ARRAY_byte.equals(leftType) || Converters.Type.TYPE_ARRAY_BYTE.equals(leftType)) {
+            assignmentStatement = getARRAYTypeAssignmentStatement(leftType, Converters.Type.getFirstElementType(leftType));
+        } else if (Converters.Type.TYPE_ARRAY_STRING.equals(leftType)) {
             assignmentStatement = getARRAYTypeAssignmentStatement(leftType, Converters.Type.getFirstElementType(leftType));
         } else if (Converters.Type.isArray(leftType)) {//数组转发
             assignmentStatement = getARRAYTypeAssignmentStatement(leftType, Converters.Type.getFirstElementType(leftType));
@@ -237,6 +249,10 @@ public class AssignInfo {
 
     private String getStringTypeAssignmentStatement() {
         return assemblyAssignmentStatement(Converters.Str.class.getName().replaceAll("\\$", ".") + ".to", null, null);
+    }
+
+    private String getDateTypeAssignmentStatement() {
+        return assemblyAssignmentStatement(Converters.Date.class.getName().replaceAll("\\$", ".") + ".to", null, null);
     }
 
     private String getARRAYTypeAssignmentStatement(String type, String elementType) {
