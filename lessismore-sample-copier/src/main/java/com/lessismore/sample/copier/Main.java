@@ -27,6 +27,9 @@ public class Main {
         UserDTO dto = copier1.copy(user);
         System.out.println(JSON.toJSON(dto));
 
+        User u = CopierFactory.getCopier(UserDTO.class, User.class).copy(dto);
+        System.out.println(JSON.toJSON(u));
+
         CopierInterface<User, Person> copier2 = CopierFactory.getCopier(User.class, Person.class);
         Person person = copier2.copy(user);
         System.out.println(JSON.toJSON(person));

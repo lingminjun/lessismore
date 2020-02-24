@@ -58,7 +58,7 @@ public final class Converters {
         public static final java.lang.String TYPE_HASH_SET = HashSet.class.getName();
 
         // map
-        public static final java.lang.String TYPE_MAP = Map.class.getName();
+        public static final java.lang.String TYPE_MAP = java.util.Map.class.getName();
         public static final java.lang.String TYPE_HASH_MAP = HashMap.class.getName();
 
         // 基础类型数组
@@ -207,56 +207,6 @@ public final class Converters {
     }
 
 
-    public static class Date {
-        // 通用的转换函数
-        public static java.util.Date to(Object source, java.util.Date defaultValue) {
-            if (source == null) {
-                return defaultValue;
-            }
-
-            // 判断日期格式 yyyy-MM-dd HH:mm:ss.SSS  or  EEE MMM dd HH:mm:ss zzz yyyy (Date.toString)
-            if (source instanceof CharSequence) {
-                String str = source.toString();
-                try {
-                    if (isMatchRegex(str, DEFAULT_DATE_REGEX)) {
-                        return new SimpleDateFormat(DEFAULT_DATE_FORMAT).parse(str);
-                    } else if (isMatchRegex(str, NORMAL_DATE_REGEX)) {
-                        return new SimpleDateFormat(NORMAL_DATE_FORMAT).parse(str);
-                    } else if (isMatchRegex(str, COMMON_DATE_REGEX)) {
-                        return new SimpleDateFormat(COMMON_DATE_FORMAT).parse(str);
-                    }
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-            } else {
-                // 无法确定是否为毫秒
-                Long value = LONG.to(source, null);
-                if (value != null) {
-                    return new java.util.Date(value.longValue());
-                }
-            }
-
-            return defaultValue;
-        }
-
-        // Sun Feb 23 11:09:27 CST 2020
-        private static final String DEFAULT_DATE_REGEX = "^[A-Z][a-z]{2} [A-Z][a-z]{2} \\d{2} \\d{2}:\\d{2}:\\d{2} [A-Z]{3} \\d{4}$";
-        private static final String NORMAL_DATE_REGEX = "^\\d{4}\\-\\d{2}\\-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{3}$";
-        private static final String COMMON_DATE_REGEX = "^\\d{4}\\-\\d{2}\\-\\d{2} \\d{2}:\\d{2}:\\d{2}$";
-
-        public static final String DEFAULT_DATE_FORMAT = "EEE MMM dd HH:mm:ss zzz yyyy";
-        public static final String NORMAL_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss.SSS";
-        public static final String COMMON_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
-
-        private static boolean isMatchRegex(String string, String regex){
-            Pattern pattern = Pattern.compile(regex);
-            return pattern.matcher(string).matches();
-        }
-
-
-    }
-
-
     // 负责容器转换
     public static class Collection {
 
@@ -308,17 +258,6 @@ public final class Converters {
         }
     }
 
-    // 负责容器转换
-    public static class Map {
-        public static <K,T,S> java.util.Map<K, T> copy(java.util.Map<K, S> sources, Class<T> type, java.util.Map<K, T> defaultValue, T elementDefaultVaule) {
-            if (sources == null) {
-                return defaultValue;
-            }
-            return sources.entrySet().stream().collect(Collectors.toMap(e -> e.getKey(), e -> Obj.to(e.getValue(), type, null, elementDefaultVaule, null)));
-        }
-    }
-
-
     public static class Array {
 
         // 容器转数组
@@ -355,6 +294,55 @@ public final class Converters {
                 return defaultValue;
             }
         }
+    }
+
+    public static class Date {
+        // 通用的转换函数
+        public static java.util.Date to(Object source, java.util.Date defaultValue) {
+            if (source == null) {
+                return defaultValue;
+            }
+
+            // 判断日期格式 yyyy-MM-dd HH:mm:ss.SSS  or  EEE MMM dd HH:mm:ss zzz yyyy (Date.toString)
+            if (source instanceof CharSequence) {
+                String str = source.toString();
+                try {
+                    if (isMatchRegex(str, DEFAULT_DATE_REGEX)) {
+                        return new SimpleDateFormat(DEFAULT_DATE_FORMAT).parse(str);
+                    } else if (isMatchRegex(str, NORMAL_DATE_REGEX)) {
+                        return new SimpleDateFormat(NORMAL_DATE_FORMAT).parse(str);
+                    } else if (isMatchRegex(str, COMMON_DATE_REGEX)) {
+                        return new SimpleDateFormat(COMMON_DATE_FORMAT).parse(str);
+                    }
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                // 无法确定是否为毫秒
+                Long value = LONG.to(source, null);
+                if (value != null) {
+                    return new java.util.Date(value.longValue());
+                }
+            }
+
+            return defaultValue;
+        }
+
+        // Sun Feb 23 11:09:27 CST 2020
+        private static final String DEFAULT_DATE_REGEX = "^[A-Z][a-z]{2} [A-Z][a-z]{2} \\d{2} \\d{2}:\\d{2}:\\d{2} [A-Z]{3} \\d{4}$";
+        private static final String NORMAL_DATE_REGEX = "^\\d{4}\\-\\d{2}\\-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{3}$";
+        private static final String COMMON_DATE_REGEX = "^\\d{4}\\-\\d{2}\\-\\d{2} \\d{2}:\\d{2}:\\d{2}$";
+
+        public static final String DEFAULT_DATE_FORMAT = "EEE MMM dd HH:mm:ss zzz yyyy";
+        public static final String NORMAL_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss.SSS";
+        public static final String COMMON_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
+
+        private static boolean isMatchRegex(String string, String regex){
+            Pattern pattern = Pattern.compile(regex);
+            return pattern.matcher(string).matches();
+        }
+
+
     }
 
     // =========to INT=========
