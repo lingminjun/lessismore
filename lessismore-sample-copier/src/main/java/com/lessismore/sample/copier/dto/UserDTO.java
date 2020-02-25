@@ -9,8 +9,9 @@ import java.util.List;
 
 //@XAutoAccessor
 @Data
-@XAutoConvert(@XAutoTarget(targetClassName = "com.lessismore.sample.copier.dal.User",
-        mapping = {@XAutoMapping(field = "sex", from = "gender")}))
+//@XAutoConvert(targets = @XAutoTarget(targetClassName = "com.lessismore.sample.copier.dal.User",
+//        mapping = {@XAutoMapping(field = "sex", from = "gender")}))
+//@XAutoConvert
 public class UserDTO {
     public Long uid;
     public String nick;

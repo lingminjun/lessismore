@@ -69,7 +69,7 @@ public @interface XAutoConvert {
 
 使用案例：
 ```
-@XAutoConvert(@XAutoTarget(targetClassName = "com.lessismore.sample.copier.dal.User", mapping = @XAutoMapping(field = "sex", from = "gender")))
+@XAutoConvert(targets = @XAutoTarget(targetClassName = "com.lessismore.sample.copier.dal.User", mapping = @XAutoMapping(field = "sex", from = "gender")))
 public class User extends BaseUser {
     public String name;
     public Integer age;

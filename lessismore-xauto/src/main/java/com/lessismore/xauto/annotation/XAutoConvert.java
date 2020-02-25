@@ -13,8 +13,14 @@ import java.lang.annotation.Target;
 @XAutoAccessor
 public @interface XAutoConvert {
     /**
-     * 所有支持的类
+     * 所有支持的原始类
      * @return
      */
-    XAutoTarget[] value();
+    XAutoSource[] sources() default {};
+
+    /**
+     * 所有支持的目标类
+     * @return
+     */
+    XAutoTarget[] targets() default {};
 }

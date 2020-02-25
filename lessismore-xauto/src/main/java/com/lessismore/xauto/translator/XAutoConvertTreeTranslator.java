@@ -1,6 +1,7 @@
 package com.lessismore.xauto.translator;
 
 import com.lessismore.xauto.annotation.XAutoConvert;
+import com.lessismore.xauto.annotation.XAutoSource;
 import com.lessismore.xauto.annotation.XAutoTarget;
 import com.lessismore.xauto.ast.ClassInfo;
 import com.lessismore.xauto.ast.CopierInfo;
@@ -31,13 +32,13 @@ public class XAutoConvertTreeTranslator extends AbstractTreeTranslator {
     @Override
     protected void translateClass(JCTree.JCClassDecl jcClassDecl, ClassInfo classInfo) {
 
-        // 查找可转换的目标对象
-        List<TargetInfo> targets = getTargets(jcClassDecl);
+        // 查找可转换的对象
+        List<ConvertInfo> convertInfos = getAllConverts(jcClassDecl);
         List<String> copiers = new ArrayList<>();
-        if (targets != null) {
-            for (TargetInfo target : targets) {
+        if (convertInfos != null) {
+            for (ConvertInfo convertInfo : convertInfos) {
                 // 添加新的拷贝类
-                CopierInfo copierInfo = makeWriteCopierInfo(classInfo, target);
+                CopierInfo copierInfo = makeWriteCopierInfo(classInfo, convertInfo);
                 if (classInfo != null) {
                     copiers.add(copierInfo.getClassName());
                 }
@@ -50,27 +51,51 @@ public class XAutoConvertTreeTranslator extends AbstractTreeTranslator {
         }
     }
 
-    private static class TargetInfo {
-        ClassInfo target;
-        Map<String,MappingInfo> mappings;
+
+    private abstract static class ConvertInfo {
+        protected ClassInfo classInfo;
+        protected Map<String,MappingInfo> mappings;
     }
 
-    private List<TargetInfo> getTargets(JCTree.JCClassDecl jcClassDecl) {
-        List<TargetInfo> targets = new ArrayList<>();
-        java.util.List<JCTree.JCAnnotation> targetAnnotations = getTargetAnnotations(jcClassDecl);
-        if (targetAnnotations != null && targetAnnotations.size() > 0) {
+    private static class TargetInfo extends ConvertInfo {
+        public ClassInfo getTarget() {
+            return classInfo;
+        }
+    }
 
-            for (JCTree.JCAnnotation annotation : targetAnnotations) {
+    private static class SourceInfo extends ConvertInfo {
+        public ClassInfo getSource() {
+            return classInfo;
+        }
+    }
+
+    private List<ConvertInfo> getAllConverts(JCTree.JCClassDecl jcClassDecl) {
+        List<ConvertInfo> targets = new ArrayList<>();
+        java.util.List<JCTree.JCAnnotation> annotations = getTargetAnnotations(jcClassDecl);
+        java.util.List<JCTree.JCAnnotation> sourceAnnotations = getSourceAnnotations(jcClassDecl);
+        if (sourceAnnotations != null) {
+            annotations.addAll(sourceAnnotations);
+        }
+
+        if (annotations != null && annotations.size() > 0) {
+            for (JCTree.JCAnnotation annotation : annotations) {
                 ClassInfo target = null;
+                ClassInfo source = null;
                 String targetClassName = null;
+                String sourceClassName = null;
                 Map<String,MappingInfo> mapping = new HashMap<>();
                 for (JCTree.JCExpression expression : annotation.args) {
                     if (expression instanceof JCTree.JCAssign) {//等式，直接取右侧
                         if (((JCTree.JCAssign) expression).lhs.toString().equals("target")) {
                             JCTree.JCFieldAccess targetField = (JCTree.JCFieldAccess)((JCTree.JCAssign) expression).rhs;
                             target = getClassInfo(targetField.selected.type.toString());
+                        } else if (((JCTree.JCAssign) expression).lhs.toString().equals("source")) {
+                            JCTree.JCFieldAccess sourceField = (JCTree.JCFieldAccess)((JCTree.JCAssign) expression).rhs;
+                            source = getClassInfo(sourceField.selected.type.toString());
                         } else if (((JCTree.JCAssign) expression).lhs.toString().equals("targetClassName")) {
                             targetClassName = valueString(((JCTree.JCAssign) expression).rhs.toString());
+                        } else if (((JCTree.JCAssign) expression).lhs.toString().equals("sourceClassName")) {
+                            sourceClassName = valueString(((JCTree.JCAssign) expression).rhs.toString());
                         } else if (((JCTree.JCAssign) expression).lhs.toString().equals("mapping")) {
                             Map<String,MappingInfo> mp = Utils.parseMapping(((JCTree.JCAssign) expression).rhs);
                             if (mp != null && mp.size() > 0) {
@@ -80,16 +105,28 @@ public class XAutoConvertTreeTranslator extends AbstractTreeTranslator {
                     }
                 }
 
-                // 去类名
+                // 取类名
                 if (target == null && StringUtils.notEmpty(targetClassName)) {
                     target = getClassInfo(targetClassName);
                 }
 
+                // 取类名
+                if (source == null && StringUtils.notEmpty(sourceClassName)) {
+                    source = getClassInfo(sourceClassName);
+                }
+
                 if (target != null) {
                     TargetInfo targetInfo = new TargetInfo();
-                    targetInfo.target = target;
+                    targetInfo.classInfo = target;
                     targetInfo.mappings = mapping;
                     targets.add(targetInfo);
+                }
+
+                if (source != null) {
+                    SourceInfo sourceInfo = new SourceInfo();
+                    sourceInfo.classInfo = source;
+                    sourceInfo.mappings = mapping;
+                    targets.add(sourceInfo);
                 }
             }
         }
@@ -102,8 +139,19 @@ public class XAutoConvertTreeTranslator extends AbstractTreeTranslator {
         return getArgsAnnotations(autoConfiguration, XAutoTarget.class.getName());
     }
 
-    private CopierInfo makeWriteCopierInfo(ClassInfo sourceInfo, TargetInfo targetInfo) {
-        CopierInfo copierInfo = new CopierInfo(targetInfo.target, sourceInfo, targetInfo.mappings);
+    private java.util.List<JCTree.JCAnnotation> getSourceAnnotations(JCTree.JCClassDecl jcClassDecl) {
+        JCTree.JCAnnotation autoConfiguration = getAnnotation(jcClassDecl.mods.annotations, XAutoConvert.class.getName());
+        return getArgsAnnotations(autoConfiguration, XAutoSource.class.getName());
+    }
+
+
+    private CopierInfo makeWriteCopierInfo(ClassInfo classInfo, ConvertInfo convertInfo) {
+        CopierInfo copierInfo = null;
+        if (convertInfo instanceof TargetInfo) {
+            copierInfo = new CopierInfo(convertInfo.classInfo, classInfo, convertInfo.mappings);
+        } else {
+            copierInfo = new CopierInfo(classInfo, convertInfo.classInfo, convertInfo.mappings);
+        }
         String copierSourceCodes = resolver.resolver("xauto/ftl/copier", "ftl", copierInfo);
         if (copierSourceCodes != null && copierSourceCodes.length() > 0) {
             writeJavaSourceFile(copierInfo.getClassName(), copierSourceCodes);
