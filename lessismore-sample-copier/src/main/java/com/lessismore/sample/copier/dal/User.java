@@ -8,13 +8,15 @@ import lombok.Data;
 import java.util.Date;
 
 @Data
-@XAutoConvert(@XAutoTarget(targetClassName = "com.lessismore.sample.copier.dto.UserDTO", mapping = @XAutoMapping(field = "gender", from = "sex")))
+@XAutoConvert(@XAutoTarget(targetClassName = "com.lessismore.sample.copier.dto.UserDTO",
+        mapping = {@XAutoMapping(field = "gender", from = "sex"),
+                @XAutoMapping(field = "city", from = "address", expression = "#{fromValue} != null ? #{fromValue}.city : null")}))
 public class User extends BaseUser {
     public String name;
     public Integer age;
     public Integer sex; // gender对应
     public Date birthDay;
-//    public Integer getGender() {
-//        return sex;
-//    }
+
+    public Address address;
+
 }

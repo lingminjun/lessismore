@@ -1,6 +1,7 @@
 package com.lessismore.sample.copier;
 
 import com.alibaba.fastjson.JSON;
+import com.lessismore.sample.copier.dal.Address;
 import com.lessismore.sample.copier.dal.User;
 import com.lessismore.sample.copier.dto.Gender;
 import com.lessismore.sample.copier.dto.UserDTO;
@@ -22,6 +23,8 @@ public class Main {
         user.sex = 1;
         user.age = 30;
         user.birthDay = new Date();
+        user.address = new Address();
+        user.address.city = "上海";
 
         CopierInterface<User, UserDTO> copier1 = CopierFactory.getCopier(User.class, UserDTO.class);
         UserDTO dto = copier1.copy(user);

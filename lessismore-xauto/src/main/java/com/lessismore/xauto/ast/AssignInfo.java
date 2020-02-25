@@ -5,6 +5,8 @@ import com.lessismore.xauto.copy.Converters;
 public class AssignInfo {
     public static final String VAR_SOURCE = "source";
     public static final String VAR_TARGET = "target";
+    public static final String VAR_FROM_VALUE = "#\\{fromValue\\}";
+    public static final String VAR_LOCAL = "_local_var";
 
     // 左侧 target
     public final FieldInfo leftField;
@@ -87,9 +89,20 @@ public class AssignInfo {
             sourceStatement.append(".");
             sourceStatement.append(rightField.name);
         }
+
+        // 需要取表达式
+        if (StringUtils.notEmpty(expression)) {
+            String codes = expression.replaceAll(VAR_FROM_VALUE, VAR_LOCAL);
+            String converts = Converters.Obj.class.getName().replaceAll("\\$",".");
+            if (codes.contains("return ")) {
+                return String.format("%s.get(() -> { %s _local_var = %s; %s })",converts, getRightType(), sourceStatement.toString(), codes);
+            } else {
+                return String.format("%s.get(() -> { %s _local_var = %s; return %s; })",converts, getRightType(), sourceStatement.toString(), codes);
+            }
+        }
+
         return sourceStatement.toString();
     }
-
 
     public String getAssignmentStatement() {
         if (assignmentStatement != null) {
@@ -101,6 +114,12 @@ public class AssignInfo {
         String rightType = getRightType();
         // 是否有赋值语句
         if (leftType == null || rightType == null || leftField.isIgnore()) {
+            return assignmentStatement;
+        }
+
+        // 对于expression情况处理
+        if (StringUtils.notEmpty(expression)) {
+            assignmentStatement = getEqualTypeAssignmentStatement();
             return assignmentStatement;
         }
 

@@ -1,6 +1,5 @@
 package com.lessismore.sample.copier.dto;
 
-import com.lessismore.xauto.annotation.XAutoAccessor;
 import com.lessismore.xauto.annotation.XAutoConvert;
 import com.lessismore.xauto.annotation.XAutoMapping;
 import com.lessismore.xauto.annotation.XAutoTarget;
@@ -10,7 +9,8 @@ import java.util.List;
 
 //@XAutoAccessor
 @Data
-@XAutoConvert(@XAutoTarget(targetClassName = "com.lessismore.sample.copier.dal.User", mapping = @XAutoMapping(field = "sex", from = "gender")))
+@XAutoConvert(@XAutoTarget(targetClassName = "com.lessismore.sample.copier.dal.User",
+        mapping = {@XAutoMapping(field = "sex", from = "gender")}))
 public class UserDTO {
     public Long uid;
     public String nick;
@@ -19,6 +19,10 @@ public class UserDTO {
     public Integer age;
     public Gender gender; // gender对应
     public String birthDay;
+
+    public String city;
+
+    public AddressDTO address;
 
     private List<UserDTO> friends;
 }

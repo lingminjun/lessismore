@@ -4,6 +4,8 @@ import java.lang.reflect.Array;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -154,6 +156,11 @@ public final class Converters {
     }
 
     public static class Obj {
+
+        public static <T> T get(Supplier<T> supplier) {
+            return supplier.get();
+        }
+
         // 通用的转换函数
         public static <T> T to(Object source, Class<T> type, Class<?> elementType, T defaultValue, Object elementDefaultValue) {
             if (source == null || type == null) {
