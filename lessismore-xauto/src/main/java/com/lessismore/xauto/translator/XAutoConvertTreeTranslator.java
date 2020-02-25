@@ -106,7 +106,7 @@ public class XAutoConvertTreeTranslator extends AbstractTreeTranslator {
         CopierInfo copierInfo = new CopierInfo(targetInfo.target, sourceInfo, targetInfo.mappings);
         String copierSourceCodes = resolver.resolver("xauto/ftl/copier", "ftl", copierInfo);
         if (copierSourceCodes != null && copierSourceCodes.length() > 0) {
-            writeSourceFile(copierInfo.getClassName(), copierSourceCodes);
+            writeJavaSourceFile(copierInfo.getClassName(), copierSourceCodes);
         } else {
             return null;
         }

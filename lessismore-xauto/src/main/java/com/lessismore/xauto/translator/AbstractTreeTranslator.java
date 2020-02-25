@@ -25,6 +25,7 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
+import javax.tools.StandardLocation;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -1329,6 +1330,9 @@ public abstract class AbstractTreeTranslator extends TreeTranslator {
 
     protected java.util.List<JCTree.JCAnnotation> getArgsAnnotations(JCTree.JCAnnotation annotation, String type) {
         java.util.List<JCTree.JCAnnotation> annotations = new ArrayList<JCTree.JCAnnotation>();
+        if (annotation == null) {
+            return annotations;
+        }
         for (JCTree.JCExpression expression : annotation.args) {
             if (expression instanceof JCTree.JCAssign) {//等式，直接取右侧
                 JCTree.JCExpression rhs = ((JCTree.JCAssign) expression).rhs;
@@ -1386,8 +1390,16 @@ public abstract class AbstractTreeTranslator extends TreeTranslator {
         return buffer.toString();
     }
 
-    protected final void writeSourceFile(String newFullPackage, String codes) {
+    protected final void writeResourceFile(String relativeName, String content) {
+        filer.writeResourceFile(relativeName, content);
+    }
+
+    protected final void writeJavaSourceFile(String newFullPackage, String codes) {
         filer.writeJavaSourceFile(newFullPackage, codes);
+    }
+
+    protected final void writeJavaSourceFile(String relativePath, String newFullPackage, String codes) {
+        filer.writeJavaSourceFile(relativePath,newFullPackage, codes);
     }
 
     protected final void appendServiceResourceFile(String resourceName, String appendContent) {

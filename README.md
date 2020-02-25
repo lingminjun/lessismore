@@ -69,7 +69,7 @@ public @interface XAutoConvert {
 
 使用案例：
 ```
-@XAutoConvert("com.lessismore.sample.copier.dto.UserDTO")
+@XAutoConvert(@XAutoTarget(targetClassName = "com.lessismore.sample.copier.dal.User", mapping = @XAutoMapping(field = "sex", from = "gender")))
 public class User extends BaseUser {
     public String name;
     public Integer age;
@@ -89,8 +89,11 @@ public class ConverterAutoConfiguration  {
 
 **3、高级用法**
 
-自定义Copier：
+* 3.1 **自定义Copier**：
 继承实现CopierInterface，并在META-INF.service的com.lessismore.xauto.copy.CopierInterface添加自定义的Copier类，让CopierFactory可以加载那你自定义的Copier。
 
-设置默认的Copier：
+
+* 3.2 **设置默认的Copier**：
 CopierFactory提供设置默认的拷贝器，可以指定一个为默认拷贝器
+
+**4、自定义生成器**

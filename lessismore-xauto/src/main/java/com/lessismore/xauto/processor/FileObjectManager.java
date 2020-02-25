@@ -5,6 +5,7 @@ import javax.lang.model.element.Element;
 import javax.tools.FileObject;
 import javax.tools.JavaFileObject;
 import javax.tools.StandardLocation;
+import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
@@ -52,7 +53,7 @@ public class FileObjectManager {
         return item;
     }
 
-    public final void writeJavaSourceFile(JavaFileObject jfo, String codes) {
+    public final void writeFileObject(FileObject jfo, String codes) {
         try {
             Writer writer = jfo.openWriter();
             writer.write(codes);
@@ -63,10 +64,38 @@ public class FileObjectManager {
         }
     }
 
+    public final void writeResourceFile(String relativeName, String content) {
+        try {
+            FileObject fileObject = filer.createResource(StandardLocation.CLASS_OUTPUT, "", relativeName);
+            writeFileObject(fileObject, content);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public final void writeJavaSourceFile(String className, String codes) {
         try {
             JavaFileObject jfo = filer.createSourceFile(className, new Element[]{});
-            writeJavaSourceFile(jfo, codes);
+            writeFileObject(jfo, codes);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public final void writeJavaSourceFile(String relativePath, String className, String codes) {
+        String extension = JavaFileObject.Kind.SOURCE.extension;
+        if (className.endsWith(extension)) {
+            className = className.substring(0, className.length() - extension.length());
+        }
+        String relativeName = null;
+        if (relativePath.endsWith(File.separator)) {
+            relativeName = relativePath + className.replaceAll("\\.", File.separator) + extension;
+        } else {
+            relativeName = relativePath + File.separator + className.replaceAll("\\.", File.separator) + extension;
+        }
+        try {
+            FileObject fileObject = filer.createResource(StandardLocation.SOURCE_OUTPUT, "", relativeName);
+            writeFileObject(fileObject, codes);
         } catch (IOException e) {
             e.printStackTrace();
         }

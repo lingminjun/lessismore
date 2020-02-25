@@ -13,22 +13,24 @@ import java.lang.annotation.Target;
 public @interface XAutoTemplate {
     /**
      * 生产的类名字，必须全称，包括包名，如：com.lessismore.xauto.AutoService，可支持el表达式
-     * 输入对象model对应的ClassInfo
+     * 输入对象model对应的 ModelInfo
      */
-    String className();
+    String className() default "";
 
     /**
-     * 模板位置，相对resource地址，如:META-INF/tmp/xxxx
-     * 输入对象model对应的ClassInfo
-     * 模板类名请与name保持一致
+     * 模板位置，相对resource地址，如:classes:tmp/#{classTemplate}
+     * 输入对象model对应的 ModelInfo
+     * 模板中类名请与className保持一致
      */
-    String template();
+    String classTemplate() default "";
+
 
     /**
-     * 模板文件扩展名
-     * @return
+     * 模板位置，相对resource地址，如:classes:tmp/#{resourceTemplate}
+     * 输入对象model对应的 ModelInfo
      */
-    String suffix() default "ftl";
+    String resourceTemplate() default "";
+
 
     /**
      * 模版输入数据对象，构造成ClassInfo输入
@@ -36,8 +38,28 @@ public @interface XAutoTemplate {
     Class<?> model();
 
     /**
-     * 输出路径，默认当前工程class下
+     * 其他关联对象
+     */
+    Class<?>[] others() default {};
+
+    /**
+     * 输出路径，默认当前工程classes/下，取relative路径
      * @return
      */
-    String out() default "";
+    String classRelativePath() default "";
+
+    /**
+     * 输出路径，默认当前工程classes/下，取relative路径
+     * @return
+     */
+    String resourceRelativePath() default "";
+
+
+    /**
+     * className自动加载到META-INFO/#{metaInfoFileName}中
+     * 如配置Spring工厂容器：META-INF/spring.factories，
+     *      案例：metaInfoFileName = "spring.factories";
+     * @return
+     */
+    String metaInfoFileName() default "";
 }

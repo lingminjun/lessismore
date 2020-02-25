@@ -87,7 +87,7 @@ public class XAutoConverterConfigurationTreeTranslator extends AbstractTreeTrans
 
     private String makeWriteConvertersConfiguration(ConvertersInfo convertersInfo) {
         String copierSourceCodes = resolver.resolver("xauto/ftl/converter_configuration", "ftl", convertersInfo);
-        writeSourceFile(convertersInfo.getClassName(), copierSourceCodes.toString());
+        writeJavaSourceFile(convertersInfo.getClassName(), copierSourceCodes.toString());
         return convertersInfo.getClassName();
     }
 

@@ -1,7 +1,7 @@
 package com.lessismore.xauto.processor;
 
 import com.lessismore.xauto.annotation.XAutoGenerator;
-import com.lessismore.xauto.translator.XAutoConverterConfigurationTreeTranslator;
+import com.lessismore.xauto.translator.XAutoGeneratorTreeTranslator;
 import com.sun.tools.javac.tree.JCTree;
 
 import javax.annotation.processing.RoundEnvironment;
@@ -29,7 +29,7 @@ public class XAutoGeneratorProcessor extends JavacProcessor {
         elements.forEach(element -> {
             //生成jCTree语法树
             JCTree jcTree = trees.getTree(element);
-            jcTree.accept(new XAutoConverterConfigurationTreeTranslator(context,filer,elementUtils,typeUtils,maker,names,messager));
+            jcTree.accept(new XAutoGeneratorTreeTranslator(context,filer,elementUtils,typeUtils,maker,names,messager));
         });
 
         return false;
