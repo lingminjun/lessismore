@@ -97,3 +97,17 @@ public class ConverterAutoConfiguration  {
 CopierFactory提供设置默认的拷贝器，可以指定一个为默认拷贝器
 
 **4、自定义生成器**
+根据自己的需要，自动生成一些框架类
+```
+@XAutoGenerator(@XAutoTemplate(className = "${model.className}Getter",
+        classTemplate = "template/test_getter.ftl",
+        model = SimpleUser.class,
+        metaInfoFileName = "info/xserver",
+        others = {User.class, UserDTO.class}))
+public class SimpleUser extends BaseUser {
+    public String name;
+    public Integer age;
+    public Integer sex; // gender对应
+    public Date birthDay;
+}
+```
