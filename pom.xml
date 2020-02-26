@@ -82,6 +82,7 @@
     </properties>
     <modules>
         <!--<module>lessismore-xauto</module>-->
+        <module>lessismore-sample-copier-api</module>
         <module>lessismore-sample-copier</module>
     </modules>
     <licenses>
@@ -118,6 +119,11 @@
             <dependency>
                 <groupId>com.lessismore</groupId>
                 <artifactId>lessismore-xauto</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.lessismore</groupId>
+                <artifactId>lessismore-sample-copier-api</artifactId>
                 <version>${revision}</version>
             </dependency>
 

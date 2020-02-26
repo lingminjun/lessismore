@@ -25,6 +25,7 @@ public class Main {
         user.birthDay = new Date();
         user.address = new Address();
         user.address.city = "上海";
+        user.address.province = "上海";
 
         CopierInterface<User, UserDTO> copier1 = CopierFactory.getCopier(User.class, UserDTO.class);
         UserDTO dto = copier1.copy(user);
