@@ -7,16 +7,9 @@
     <artifactId>lessismore-xauto</artifactId>
     <name>Less is More XAuto</name>
     <description>Less is More XAuto</description>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <packaging>jar</packaging>
-
-    <parent>
-        <groupId>com.lessismore</groupId>
-        <artifactId>parent</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
-    </parent>
-
+    
     <properties>
         <revision>1.0.0-SNAPSHOT</revision>
         <java.version>1.8</java.version>
