@@ -6,7 +6,7 @@ public final class CopierFactory {
 
     private static Map<String, CopierInterface> copiers = new HashMap<>();
     private static final CopierInterface defaultCopier = new InnerDefaultCopier();
-    private static DefaultCopierFactory defaultCopierFactory = null;
+    private static DynamicCopier dynamicCopier = null;
 
     private static String key(Class<?> source, Class<?> target) {
         return source.hashCode() + ":" + target.hashCode();
@@ -17,8 +17,11 @@ public final class CopierFactory {
         //System.out.println("register copier class:"+copier.getClass().getName());
     }
 
-    public static synchronized void setDefaultCopierFactory(DefaultCopierFactory factory) {
-        defaultCopierFactory = factory;
+    public static synchronized void setDynamicCopier(DynamicCopier copier) {
+        if (dynamicCopier != null) {
+            throw new RuntimeException("默认拷贝配置已经设置，不允许覆盖");
+        }
+        dynamicCopier = copier;
     }
 
     public static <S, T> CopierInterface<S,T> getCopier(Class<S> source, Class<T> target) {
@@ -26,7 +29,17 @@ public final class CopierFactory {
         if (copier != null) {
             return copier;
         }
-        return defaultCopierFactory != null ? defaultCopierFactory.getCopier(source,target) : defaultCopier;
+
+        if (dynamicCopier != null) {
+            return new DefaultCopier(source,target) {
+                @Override
+                public Object copy(Object s, Class t, Object defaultValue) {
+                    return dynamicCopier.copy(s, t, defaultValue);
+                }
+            };
+        } else {
+            return defaultCopier;
+        }
     }
 
     // 采用SPI方式加载所有的copiers

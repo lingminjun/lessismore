@@ -33,7 +33,7 @@
     <properties>
         <revision>1.0.0-SNAPSHOT</revision>
 
-        <lessismore.version>1.0.1</lessismore.version>
+        <lessismore.version>1.0.2</lessismore.version>
 
         <java.version>1.8</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>

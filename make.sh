@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 
-cd ../lessismore-xauto
+cd lessismore-xauto
 
 
 mvn clean install -DskipTests
 
+echo "xauto打包完成。。。。"
 
-cd ../lessismore-sample-copier
-
+cd ..
 
 mvn clean package -DskipTests
 

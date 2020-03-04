@@ -18,10 +18,12 @@
         <dependency>
             <groupId>com.lessismore</groupId>
             <artifactId>lessismore-xauto</artifactId>
+            <version>${lessismore.version}</version>
         </dependency>
         <dependency>
             <groupId>com.lessismore</groupId>
             <artifactId>lessismore-sample-copier-api</artifactId>
+            <version>${revision}</version>
         </dependency>
 
         <!-- fastjson -->
