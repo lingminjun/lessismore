@@ -1,5 +1,6 @@
 package com.lessismore.sample.copier.dal;
 
+import com.lessismore.sample.copier.dto.UserDTO;
 import com.lessismore.xauto.annotation.XAutoConvert;
 import com.lessismore.xauto.annotation.XAutoMapping;
 import com.lessismore.xauto.annotation.XAutoSource;
@@ -9,10 +10,10 @@ import lombok.Data;
 import java.util.Date;
 
 @Data
-@XAutoConvert(targets = @XAutoTarget(targetClassName = "com.lessismore.sample.copier.dto.UserDTO",
+@XAutoConvert(targets = @XAutoTarget(target = UserDTO.class,
         mapping = {@XAutoMapping(field = "gender", from = "sex"),
                 @XAutoMapping(field = "city", from = "address", expression = "#{fromValue} != null ? #{fromValue}.city : null")}),
-        sources = @XAutoSource(sourceClassName = "com.lessismore.sample.copier.dto.UserDTO",
+        sources = @XAutoSource(source =UserDTO.class,
                 mapping = {@XAutoMapping(field = "gender", from = "sex"),
                         @XAutoMapping(field = "city", from = "address", expression = "#{fromValue} != null ? #{fromValue}.city : null")}))
 public class User extends BaseUser {

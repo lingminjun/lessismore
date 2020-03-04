@@ -5,7 +5,8 @@ import java.util.*;
 public final class CopierFactory {
 
     private static Map<String, CopierInterface> copiers = new HashMap<>();
-    private static CopierInterface defaultCopier = new DefaultCopier();
+    private static final CopierInterface defaultCopier = new InnerDefaultCopier();
+    private static DefaultCopierFactory defaultCopierFactory = null;
 
     private static String key(Class<?> source, Class<?> target) {
         return source.hashCode() + ":" + target.hashCode();
@@ -16,8 +17,8 @@ public final class CopierFactory {
         //System.out.println("register copier class:"+copier.getClass().getName());
     }
 
-    public static void setDefaultCopier(CopierInterface copier) {
-        defaultCopier = copier;
+    public static synchronized void setDefaultCopierFactory(DefaultCopierFactory factory) {
+        defaultCopierFactory = factory;
     }
 
     public static <S, T> CopierInterface<S,T> getCopier(Class<S> source, Class<T> target) {
@@ -25,7 +26,7 @@ public final class CopierFactory {
         if (copier != null) {
             return copier;
         }
-        return defaultCopier != null ? defaultCopier : new DefaultCopier();
+        return defaultCopierFactory != null ? defaultCopierFactory.getCopier(source,target) : defaultCopier;
     }
 
     // 采用SPI方式加载所有的copiers
@@ -56,12 +57,16 @@ public final class CopierFactory {
         }
     }
 
-
     // 默认的处理方式
-    private static class DefaultCopier extends Copier {
-        DefaultCopier() {
-            super(Object.class,Object.class);
+    private static class InnerDefaultCopier extends DefaultCopier {
+        public InnerDefaultCopier() {
+            super(Object.class, Object.class);
         }
+
+        public InnerDefaultCopier(Class<?> sourceClass, Class<?> targetClass) {
+            super(sourceClass, targetClass);
+        }
+
         @Override
         public Object copy(Object source, Class type, Object defaultValue) {
             return defaultValue;

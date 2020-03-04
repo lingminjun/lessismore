@@ -147,10 +147,11 @@ public class XAutoConvertTreeTranslator extends AbstractTreeTranslator {
 
     private CopierInfo makeWriteCopierInfo(ClassInfo classInfo, ConvertInfo convertInfo) {
         CopierInfo copierInfo = null;
+        String packageName = classInfo.packageName + ".copier"; // 统一package，限定jar包引用关系
         if (convertInfo instanceof TargetInfo) {
-            copierInfo = new CopierInfo(convertInfo.classInfo, classInfo, convertInfo.mappings);
+            copierInfo = new CopierInfo(packageName, convertInfo.classInfo, classInfo, convertInfo.mappings);
         } else {
-            copierInfo = new CopierInfo(classInfo, convertInfo.classInfo, convertInfo.mappings);
+            copierInfo = new CopierInfo(packageName, classInfo, convertInfo.classInfo, convertInfo.mappings);
         }
         String copierSourceCodes = resolver.resolver("xauto/ftl/copier", "ftl", copierInfo);
         if (copierSourceCodes != null && copierSourceCodes.length() > 0) {

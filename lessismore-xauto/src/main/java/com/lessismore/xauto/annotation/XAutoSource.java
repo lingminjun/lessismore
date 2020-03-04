@@ -14,12 +14,7 @@ public @interface XAutoSource {
     /**
      * 待转换目标类型
      */
-    Class<?> source() default Object.class;
-
-    /**
-     * 待转换目标类型，不方便引用实例
-     */
-    String sourceClassName() default "";
+    Class<?> source();
 
     /**
      * mapping细节变化
